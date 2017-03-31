@@ -46,11 +46,29 @@ type Stack = [Tree]
 -- TODO: Finish these data structures
 -- Finite State Machine structures
 data FSM = FSM
-    { states :: [TState] 
-        
-    }
+    { 	states :: [TState] 
+    ,  	alphabet :: [Char]
+    ,	transitions :: [TTransition]  
+    ,	initialState :: TState
+    ,	finalStates :: [TState]
+    } 
 
-type TState = Int
+instance Show FSM where
+	show (FSM s a t i f) = displayStates  ++ displayInitialStates ++ displayFinalStates ++ displayTransitions
+		where
+			displayStates = "Printing out states\n"
+			displayInitialStates = "Printing out initial states\n"
+			displayFinalStates = "Priting out final states\n"
+			displayTransitions = "Printing out transitions\nPrinting out transitions\nPrinting out transitions\nPrinting out transitions\nPrinting out transitions\n"
+
+-- Transition 
+data TTransition = TTransition
+	{	from :: TState
+	,	symbol :: Char
+	,	to :: TState
+	} deriving (Show)
+
+type TState = Int deriving (Show)
 
 
 representTree :: Tree -> String 

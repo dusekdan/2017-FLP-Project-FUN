@@ -3,9 +3,9 @@ import Data.Semigroup ((<>))
 import Control.Monad
 import System.IO
 import Data.Either
+import Data.List (delete)
 import System.Exit (exitWith)
 import Types
-
 
 {----------------------------------------------------------- 
         COMMANDLINE ENTRY POINT & ARGUMENTS PROCESSING 
@@ -22,7 +22,7 @@ main = do
 
 parameterDefinitions :: Parser Arguments
 parameterDefinitions = Arguments
-      <$> (parseRepresent <|> parseTransform)
+      <$> (parseRepresent <|> parseTransform <|> parseTransformDraw)
       <*> argument str (metavar "FILE" <> value "")
   where
     parseRepresent = flag' Represent
@@ -37,11 +37,18 @@ parameterDefinitions = Arguments
         <> help "Converts regular expression from input to finite state machine on output."
         )
 
+    parseTransformDraw = flag' TransformDraw
+        ( long "trasform-draw"
+        <> short 'd'
+        <> help "Does the basic transformation but instead of printing string on output, generates image of final state machine."
+        )
+
 {-- Based on chosen flag calls for corresponding processing function --}
 processInput :: Arguments -> IO ()
 processInput (Arguments a file) = case a of
     Represent -> demonstrateRegexRepresentation file
-    Transform -> transformRV2FSM file 
+    Transform -> transformRV2FSM file
+    TransformDraw -> transformRV2Image file 
 
 
 {----------------------------------------------------------- 
@@ -62,6 +69,12 @@ transformRV2FSM file = do
     content <- readFile file
     if lines content == [] then putStr $ show $ FSM [1] [] [] 1 [] 
     else putStr $ rv2rka' $ head $ map readRPNRegex $ lines content
+
+transformRV2Image  :: String -> IO ()
+transformRV2Image file = do
+    content <- readFile file
+    if lines content == [] then writeFile "FSMImages/Generated.tex" (show $ FSM [1] [] [] 1 [] )
+    else writeFile "FSMImages/Generated.tex" ( rka2Image' ( head ( map readRPNRegex (lines content) ) ) )
 
 
 {-- 
@@ -154,3 +167,18 @@ constructIteration (FSM aS _ aT aIS aFS) = FSM ([1] ++ generateNewStates) [] gen
     generateNewTransitions =    [TTransition 1 Epsilon 2, TTransition newFinalState Epsilon 1, TTransition 1 Epsilon newFinalState] 
                                     ++ map (\s -> TTransition s Epsilon newFinalState) (map (+1) aFS) 
                                     ++ map (shiftTransition 1) aT 
+
+
+{-- Extension: FSM drawing --}
+rka2Image' :: Either String Tree -> String 
+rka2Image' (Left e) = e
+rka2Image' (Right t) = convertToTex $ rv2rka t
+
+convertToTex (FSM s _ t i f) = documentHeading ++ renderStates ++ renderTransitions t ++ ";" ++ documentFooting
+    where 
+          renderStates = "\n\\node[initial,state] (" ++ show i ++ ") {$" ++ show i ++ "$};\n"
+                        ++ unlines (map (\state -> "\\node[state] (" ++ show state ++ ") [right of=" ++ show (state-1)  ++ "] {$" ++ show state ++ "$};") (delete (head f) (delete i s)))
+                        ++ unlines (map (\fs -> "\\node[state, accepting] (" ++ show fs ++ ") [right of=" ++ show (fs-1)  ++ "] {$" ++ show fs ++ "$};") f)
+          renderTransitions t = "\n\\path" 
+                                ++ unlines (map (\t -> renderTransitionPath t) t) 
+          renderTransitionPath (TTransition f s t) = "\n(" ++ show f ++ ") edge [bend left]  node {" ++ show s ++ "} (" ++ show t ++ ")"

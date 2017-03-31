@@ -6,6 +6,7 @@ module Types where
     data Action 
       = Represent 
       | Transform 
+      | TransformDraw
 
     data Arguments = Arguments
       {   action  ::  Action 
@@ -56,3 +57,8 @@ module Types where
 
     -- Other usefull constant functions 
     regexNotValid = "Invalid Input"
+
+    {-- Extension for FSM drawing  --}
+    documentHeading = "\\documentclass{standalone}\n\\usepackage{pgf}\n\\usepackage{tikz}\n\\usetikzlibrary{arrows,automata}\n\\usepackage[latin1]{inputenc}\n\\begin{document}\n\\begin{tikzpicture}\n[->,>=stealth',shorten >=1pt,auto,node distance=0.8cm,semithick]\\tikzstyle{every state}\n=[fill=none,draw=black,text=black]"
+    documentFooting = "\\end{tikzpicture}\n\\end{document}\n"
+

@@ -1,6 +1,8 @@
-.gitignore
 Types.hi
 Types.o
 rv-2-rka.exe
 rv-2-rka.o
 rv-2-rka.hi
+Main.o
+Main.hi
+rv-2-rka

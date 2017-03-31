@@ -1,10 +1,9 @@
-import Options.Applicative;
+import Options.Applicative
 import Data.Semigroup ((<>))
 import Control.Monad
 import System.IO
 import Data.Either
 import System.Exit (exitWith)
-
 import Types
 
 
@@ -18,8 +17,8 @@ main = do
       where
         opts = info (parameterDefinitions <**> helper)
           ( fullDesc
-         <> progDesc "Reads regular expression in reverse polish notation (postfix) from input file and based on -r|-t switch displays or transforms it to finite state machine-"
-         <> header "Converts regex from the input to finite state machine on output." )  
+         <> progDesc "Reads regular expression in reverse polish notation (postfix) from input file and based on -r|-t switch displays or transforms it to finite state machine."
+         <> header "Postfix regex to FSM convertor." )  
 
 parameterDefinitions :: Parser Arguments
 parameterDefinitions = Arguments
@@ -29,7 +28,7 @@ parameterDefinitions = Arguments
     parseRepresent = flag' Represent
         ( long "represent" 
         <> short 'r' 
-        <> help "Converts regular expression from input to internal representation and prints it out of it."
+        <> help "Converts regular expression from input to internal representation and then prints it back to standard output."
         )
 
     parseTransform = flag' Transform
@@ -56,12 +55,14 @@ processInput (Arguments a file) = case a of
 demonstrateRegexRepresentation :: String -> IO ()
 demonstrateRegexRepresentation file = do
   content <- readFile file
-  putStrLn $ reverse $ representTree' $ head $ map readRPNRegex $ lines content
+  putStr $ reverse $ representTree' $ head $ map readRPNRegex $ lines content
 
 transformRV2FSM :: String -> IO ()
 transformRV2FSM file = do
     content <- readFile file
-    putStrLn  $ rv2rka' $ head $ map readRPNRegex $ lines content
+    if lines content == [] then putStr $ show $ FSM [1] [] [] 1 [] 
+    else putStr $ rv2rka' $ head $ map readRPNRegex $ lines content
+
 
 {-- 
     Input regex parsing functions
@@ -72,15 +73,15 @@ transformRV2FSM file = do
 readRPNRegex :: String -> Either String Tree
 readRPNRegex s = case foldM parseCharacter' [] s of 
   Right [e]  -> Right e
-  Left  e    -> Left e
-  _          -> Left regexNotValid
+  Left  e    -> Left  e
+  _          -> Left  regexNotValid
   where
     parseCharacter' (r:l:s)  '.'   =  Right $ (BinaryOperation '.' l r):s
     parseCharacter' (r:l:s)  '+'   =  Right $ (BinaryOperation '+' l r):s
     parseCharacter' (r:s)    '*'   =  Right $ (Star '*' r):s
     parseCharacter' s c 
-                        | c == '.' || c == '+' || c == '*' = Left $ regexNotValid
-                        | True = Right $ (Character c):s
+                | c == '.' || c == '+' || c == '*' = Left $ regexNotValid
+                | True = Right $ (Character c):s
 
 {-- 
     Regex tree representation functions (-r switch) 
@@ -106,7 +107,7 @@ rv2rka (Character a) = FSM [1,2] [] [TTransition 1 (TransitionLabel a) 2] 1 [2] 
 rv2rka (BinaryOperation '+' leftTree rightTree) = constructUnion (rv2rka leftTree) (rv2rka rightTree)
 rv2rka (BinaryOperation '.' leftTree rightTree) = constructConcat (rv2rka leftTree) (rv2rka rightTree)
 rv2rka (Star '*' tree) = constructIteration $ rv2rka tree
-rv2rka t =  FSM [] [] [] 0 []
+rv2rka t =  FSM [1] [] [] 1 []
 
 
 {----------------------------------------------------------- 
@@ -126,21 +127,30 @@ shiftTransition shift (TTransition f s t) = (TTransition (f+shift) s (t+shift))
 constructUnion :: FSM -> FSM -> FSM
 constructUnion (FSM aS _ aT aIS aFS) (FSM bS _ bT bIS bFS) = FSM ([1] ++ generateNewStates) [] generateNewTransitions 1 [newFinalState]
   where
-    generateNewStates = map (+1) aS ++ map (+ (1 + length aS)) bS ++ [newFinalState]
-    newFinalState = 2 + (length $ aS ++ bS)
-    generateNewTransitions = (map (shiftTransition 1) aT) ++ (map (shiftTransition (1 + length aS)) bT) ++ generateEpsilonTransitions
-    generateEpsilonTransitions = [TTransition 1 Epsilon (aIS + 1), TTransition 1 Epsilon (bIS + 1 + length aS)] ++ map (\s -> TTransition s Epsilon newFinalState) (map (+1) aFS ++  map (+ (1 + length aS)) bFS)
+    bStateShift            =    1 + length aS
+    newFinalState          =    2 + (length $ aS ++ bS)
+    generateNewStates      =    map (+1) aS ++ map (+bStateShift) bS ++ [newFinalState]
+    generateNewTransitions =    map (shiftTransition 1) aT 
+                                    ++ map (shiftTransition bStateShift) bT 
+                                    ++ generateEpsTransitions
+    generateEpsTransitions =    [TTransition 1 Epsilon (aIS + 1), TTransition 1 Epsilon (bIS + bStateShift)] 
+                                    ++ map (\s -> TTransition s Epsilon newFinalState) (map (+1) aFS ++  map (+bStateShift) bFS)
 
 constructConcat :: FSM -> FSM -> FSM
 constructConcat (FSM aS _ aT aIS aFS) (FSM bS _ bT bIS bFS) = FSM (generateNewStates) [] generateNewTransitions 1 [newFinalState]
   where 
-    generateNewStates = aS ++ [1 + length aS] ++ map (+ (1 + length aS)) bS
-    newFinalState = last generateNewStates
-    generateNewTransitions = aT ++ (map (shiftTransition (1 + length aS)) bT) ++ [TTransition (length aS) Epsilon (1 + length aS), TTransition (1 + length aS) Epsilon (2 + length aS)]
+    bStateShift            =    1 + length aS
+    generateNewStates      =    aS ++ [bStateShift] ++ map (+bStateShift) bS
+    newFinalState          =    last generateNewStates
+    generateNewTransitions =    [TTransition (length aS) Epsilon (1 + length aS), TTransition (1 + length aS) Epsilon (2 + length aS)] 
+                                    ++  aT 
+                                    ++ map (shiftTransition bStateShift) bT  
 
 constructIteration :: FSM -> FSM
 constructIteration (FSM aS _ aT aIS aFS) = FSM ([1] ++ generateNewStates) [] generateNewTransitions 1 [newFinalState]
   where
-    generateNewStates = map (+1) aS ++ [newFinalState]
-    newFinalState = 2 + length (aS) 
-    generateNewTransitions = map (shiftTransition 1) aT ++ map (\s -> TTransition s Epsilon newFinalState) (map (+1) aFS)  ++ [TTransition 1 Epsilon 2, TTransition newFinalState Epsilon 1, TTransition 1 Epsilon newFinalState] 
+    generateNewStates      =    map (+1) aS ++ [newFinalState]
+    newFinalState          =    2 + length (aS) 
+    generateNewTransitions =    [TTransition 1 Epsilon 2, TTransition newFinalState Epsilon 1, TTransition 1 Epsilon newFinalState] 
+                                    ++ map (\s -> TTransition s Epsilon newFinalState) (map (+1) aFS) 
+                                    ++ map (shiftTransition 1) aT 

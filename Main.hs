@@ -71,7 +71,8 @@ processInput (Arguments a file) = case a of
 demonstrateRegexRepresentation :: String -> IO ()
 demonstrateRegexRepresentation file = do
   content <- ensureProperInput file
-  putStr $ reverse $ representTree' $ head $ map readRPNRegex $ lines content
+  if lines content == [] then putStr ""
+  else putStr $ reverse $ representTree' $ head $ map readRPNRegex $ lines content
 
 transformRV2FSM :: String -> IO ()
 transformRV2FSM file = do
@@ -82,8 +83,8 @@ transformRV2FSM file = do
 transformRV2Image  :: String -> IO ()
 transformRV2Image file = do
     content <- ensureProperInput file
-    if lines content == [] then writeFile "FSMImages/Generated.tex" (show $ FSM [1] [] [] 1 [] )
-    else writeFile "FSMImages/Generated.tex" ( rka2Image' ( head ( map readRPNRegex (lines content) ) ) )
+    if lines content == [] then putStr (convertToTex $ FSM [1] [] [] 1 [] )
+    else putStr ( rka2Image' ( head ( map readRPNRegex (lines content) ) ) )
 
 
 ensureProperInput :: String -> IO String

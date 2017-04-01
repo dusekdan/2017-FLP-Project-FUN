@@ -5,7 +5,12 @@ import System.IO
 import Data.Either
 import Data.List (delete)
 import System.Exit (exitWith)
+
+{- My custom modules -}
 import Types
+
+-- Extra mile: Module that allows output FSM to be displayed in PDF
+import FSMDrawer
 
 {----------------------------------------------------------- 
         COMMANDLINE ENTRY POINT & ARGUMENTS PROCESSING 
@@ -173,12 +178,3 @@ constructIteration (FSM aS _ aT aIS aFS) = FSM ([1] ++ generateNewStates) [] gen
 rka2Image' :: Either String Tree -> String 
 rka2Image' (Left e) = e
 rka2Image' (Right t) = convertToTex $ rv2rka t
-
-convertToTex (FSM s _ t i f) = documentHeading ++ renderStates ++ renderTransitions t ++ ";" ++ documentFooting
-    where 
-          renderStates = "\n\\node[initial,state] (" ++ show i ++ ") {$" ++ show i ++ "$};\n"
-                        ++ unlines (map (\state -> "\\node[state] (" ++ show state ++ ") [right of=" ++ show (state-1)  ++ "] {$" ++ show state ++ "$};") (delete (head f) (delete i s)))
-                        ++ unlines (map (\fs -> "\\node[state, accepting] (" ++ show fs ++ ") [right of=" ++ show (fs-1)  ++ "] {$" ++ show fs ++ "$};") f)
-          renderTransitions t = "\n\\path" 
-                                ++ unlines (map (\t -> renderTransitionPath t) t) 
-          renderTransitionPath (TTransition f s t) = "\n(" ++ show f ++ ") edge [bend left]  node {" ++ show s ++ "} (" ++ show t ++ ")"

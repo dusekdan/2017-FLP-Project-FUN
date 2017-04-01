@@ -6,3 +6,5 @@ rv-2-rka.hi
 Main.o
 Main.hi
 rv-2-rka
+FSMDrawer.o
+FSMDrawer.hi

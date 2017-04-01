@@ -1,0 +1,25 @@
+\documentclass{standalone}
+\usepackage{pgf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,automata}
+\usepackage[latin1]{inputenc}
+\begin{document}
+\begin{tikzpicture}
+[->,>=stealth',shorten >=1pt,auto,node distance=3.0cm,semithick]\tikzstyle{every state}
+=[fill=none,draw=black,text=black]
+\node[initial,state] (1) {$1$};
+\node[state] (2) [right of=1]  {$2$};
+\node[state] (3) [right of=2]  {$3$};
+\node[state] (4) [right of=3]  {$4$};
+\node[state, accepting] (5) [below right of=4] {$5$};
+
+\path
+(2) edge [bend right]  node {$\epsilon$} (3)
+
+(3) edge [bend left=20]  node {$\epsilon$} (4)
+
+(1) edge [purple, very thick, bend left=20]  node {a} (2)
+
+(4) edge [purple, very thick, bend right]  node {b} (5)
+;\end{tikzpicture}
+\end{document}

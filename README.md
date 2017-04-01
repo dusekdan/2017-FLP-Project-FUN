@@ -1,6 +1,13 @@
 # FLP FUN RV-2-RKA 
 **Author**: [xdusek21](mailto:xdusek21@stud.fit.vutbr.cz)| Daniel Dušek 
 
+####**Osnova**
+* Použití
+*  Závislosti a překlad *
+* Algoritmus převodu RV na RKA 
+*  Implementované rozšíření pro vykreslování RKA 
+* Testy
+
 Aplikace rv-2-rka přijme na svém vstupu regulární výraz zapsaný v postfixovém tvaru a transformuje ho na rozšířený konečný automat. 
 
 ## Použití
@@ -44,3 +51,7 @@ make drawEverything				# Vše výše zmíněné naráz
 ```
 
 ## Vlastní testovací sada
+
+Původně jsem měl napsané bashové skripty, kterými jsem svůj projekt průběžně testoval. Chtěl jsem to zaobalit do makefile (což jsem také z části udělal), ale v závěru to je stejné bezpečnostní riziko jako pouštět jakýkoliv jiný studentský bash soubor. V případě zájmu je možné přepsanou část testů spustit pomocí `make run-tests`.
+
+Ve složce `TestData` jsou uloženy dvojice vstupů a výstpů, přičemž výstup je vždy pro přepínač `-t` (pro přepínač `-r` je očekávaný výstup stejný jako vstup. Přepínač `-d` není testován.

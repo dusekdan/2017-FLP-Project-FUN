@@ -15,7 +15,7 @@ Aplikace rv-2-rka přijme na svém vstupu regulární výraz zapsaný v postfixo
 
 `-r | --represent` načte ze vstupního souboru RV, uloží ho do své vnitřní reprezentace a nezměněný ho vypíše zpět na výstup
 
-`-t | --transform` načte ze vstupního souboru RV, převede ho dle algoritmu (_I!!D!!!_) na RKA a vypíše ho na výstup
+`-t | --transform` načte ze vstupního souboru RV, převede ho dle algoritmu na RKA a vypíše ho na výstup
 
 Není-li uveden vstupní soubor `[FILE]`, je uvažován standardní vstup (_stdin_)
 ___

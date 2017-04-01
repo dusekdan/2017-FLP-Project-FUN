@@ -3,9 +3,9 @@
 
 #### **Osnova**
 * Použití
-*  Závislosti a překlad *
+* Závislosti a překlad 
 * Algoritmus převodu RV na RKA 
-*  Implementované rozšíření pro vykreslování RKA 
+* Implementované rozšíření pro vykreslování RKA 
 * Testy
 
 Aplikace rv-2-rka přijme na svém vstupu regulární výraz zapsaný v postfixovém tvaru a transformuje ho na rozšířený konečný automat. 

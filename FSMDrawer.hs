@@ -1,3 +1,10 @@
+-- rv-2-rka
+-- xdusek21
+-- Daniel Dušek
+
+{-- 
+    
+--}
 module FSMDrawer where
 
     import Data.List (delete, head)
@@ -33,7 +40,7 @@ module FSMDrawer where
           
           colorizeEdge s
                         | s == Epsilon = ""
-                        | otherwise = "purple, thick, "
+                        | otherwise = "purple, very thick, "
           
           renderNodeOrdering s
                         | ((mod s 2) == 0 && (mod s 10) /= 0)  = " [right of=" ++ show (s-1) ++ "] "

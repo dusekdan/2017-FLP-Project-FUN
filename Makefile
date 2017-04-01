@@ -1,7 +1,6 @@
-#
-# rv-2-rka Makefile
-# 
-#
+# rv-2-rka
+# xdusek21
+# Daniel Dušek
 
 all:
 	ghc Main.hs -o rv-2-rka

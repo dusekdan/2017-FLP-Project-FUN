@@ -1,3 +1,7 @@
+-- rv-2-rka
+-- xdusek21
+-- Daniel Dušek
+
 import Options.Applicative
 import Data.Semigroup ((<>))
 import Control.Monad

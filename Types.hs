@@ -1,3 +1,7 @@
+-- rv-2-rka
+-- xdusek21
+-- Daniel Dušek
+
 module Types where
 
     import Data.List (intercalate)

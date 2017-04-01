@@ -70,21 +70,26 @@ processInput (Arguments a file) = case a of
 --}
 demonstrateRegexRepresentation :: String -> IO ()
 demonstrateRegexRepresentation file = do
-  content <- readFile file
+  content <- ensureProperInput file
   putStr $ reverse $ representTree' $ head $ map readRPNRegex $ lines content
 
 transformRV2FSM :: String -> IO ()
 transformRV2FSM file = do
-    content <- readFile file
+    content <- ensureProperInput file
     if lines content == [] then putStr $ show $ FSM [1] [] [] 1 [] 
     else putStr $ rv2rka' $ head $ map readRPNRegex $ lines content
 
 transformRV2Image  :: String -> IO ()
 transformRV2Image file = do
-    content <- readFile file
+    content <- ensureProperInput file
     if lines content == [] then writeFile "FSMImages/Generated.tex" (show $ FSM [1] [] [] 1 [] )
     else writeFile "FSMImages/Generated.tex" ( rka2Image' ( head ( map readRPNRegex (lines content) ) ) )
 
+
+ensureProperInput :: String -> IO String
+ensureProperInput file = case file == "" of 
+    True -> hGetContents stdin
+    False -> readFile file 
 
 {-- 
     Input regex parsing functions

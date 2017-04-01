@@ -50,4 +50,4 @@ test-represent-3:
 
 
 wis-pack:
-	zip "flp-fun-xdusek21.zip" "Main.hs" "Makefile" "Types.hs" "FSMDrawer.hs" "README.md" "FSMImages" "TestData/test.input.in" "TestData/test.input.2.in" "TestData/test.input.3.in"
+	zip "flp-fun-xdusek21.zip" "Main.hs" "Makefile" "Types.hs" "FSMDrawer.hs" "README.md" "FSMImages" TestData/*

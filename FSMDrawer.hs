@@ -2,9 +2,6 @@
 -- xdusek21
 -- Daniel Dušek
 
-{-- 
-    
---}
 module FSMDrawer where
 
     import Data.List (delete, head)

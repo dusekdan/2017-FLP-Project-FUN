@@ -1,7 +1,7 @@
 # FLP FUN RV-2-RKA 
 **Author**: [xdusek21](mailto:xdusek21@stud.fit.vutbr.cz)| Daniel Dušek 
 
-####**Osnova**
+#### **Osnova**
 * Použití
 *  Závislosti a překlad *
 * Algoritmus převodu RV na RKA 

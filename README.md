@@ -50,10 +50,10 @@ By calling:
 
 
 ```
-make drawFSM-1  				# Vytvoří obrázek pro 'a'
-make drawFSM-2					# Vytvoří obrázek pro 'ab.'
-make drawFSM-3					# Vytvoří obrázek pro RV ze zadání
+make drawFSM-1  				# Generates image for  'a'
+make drawFSM-2					# Generates image for  'ab.'
+make drawFSM-3					# Generates image for RE from task assignment
 
-make drawEverything				# Vše výše zmíněné naráz
+make drawEverything				# All of the above in one shot!
 ```
 

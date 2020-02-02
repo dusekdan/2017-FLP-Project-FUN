@@ -9,7 +9,7 @@ Project for class of Functional and Logic Programming Languages, Faculty of Info
 * (Postfix) Regular expression to extended finite automaton algorithm 
 * Extension for automaton drawing 
 * ~Tests~
-
+ 
 
 Application rv-2-rka accepts on its input regular expression written in reverse polish notation and converts it to extended finite automaton.
 
